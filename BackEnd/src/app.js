@@ -1,18 +1,25 @@
 const express = require('express');
-const aiRoutes = require('./routes/ai.routes')
-const cors = require('cors')
+const aiRoutes = require('./routes/ai.routes');
+const cors = require('cors');
+const path = require('path');
 
-const app = express()
+const app = express();
 
-app.use(cors())
+// Enable CORS
+app.use(cors());
 
+// Parse JSON requests
+app.use(express.json());
 
-app.use(express.json())
+// Serve React frontend from dist
+app.use(express.static(path.join(__dirname, '../dist')));
 
-app.get('/', (req, res) => {
-    res.send('Hello World')
-})
+// API routes
+app.use('/ai', aiRoutes);
 
-app.use('/ai', aiRoutes)
+// Fallback: send index.html for any route not handled by API
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+});
 
-module.exports = app
+module.exports = app;
